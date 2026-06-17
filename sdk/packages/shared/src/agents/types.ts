@@ -36,7 +36,7 @@ import type { BasicLogger } from "../logging/logger";
 import type { ITelemetryService } from "../services/telemetry";
 import type { WorkspaceInfo } from "../session/workspace";
 
-export const DEFAULT_MAX_PARALLEL_TOOL_CALLS = 8;
+export const DEFAULT_MAX_CONCURRENT_TOOL_EXECUTIONS = 1;
 export const DEFAULT_API_TIMEOUT_MS = 180_000;
 
 // =============================================================================
@@ -706,10 +706,12 @@ export interface AgentConfig {
 	 */
 	maxIterations?: number;
 	/**
-	 * Maximum number of tool calls to execute concurrently in a single iteration.
-	 * @default 8
+	 * Maximum number of emitted tool calls to execute concurrently in a single iteration.
+	 * This controls runtime execution concurrency, not whether the model may emit
+	 * multiple tool calls in one response.
+	 * @default 1
 	 */
-	maxParallelToolCalls?: number;
+	maxConcurrentToolExecutions?: number;
 	/**
 	 * Maximum output tokens per API call
 	 */
@@ -881,11 +883,11 @@ export const AgentConfigSchema = z.object({
 	systemPrompt: z.string(),
 	tools: z.array(z.custom<AgentTool>()),
 	maxIterations: z.number().positive().optional(),
-	maxParallelToolCalls: z
+	maxConcurrentToolExecutions: z
 		.number()
 		.int()
 		.positive()
-		.default(DEFAULT_MAX_PARALLEL_TOOL_CALLS),
+		.default(DEFAULT_MAX_CONCURRENT_TOOL_EXECUTIONS),
 	maxTokensPerTurn: z.number().positive().optional(),
 	apiTimeoutMs: z.number().positive().default(DEFAULT_API_TIMEOUT_MS),
 	userFileContentLoader: z

@@ -490,7 +490,7 @@ export class DefaultRuntimeBuilder implements RuntimeBuilder {
 			maxTokensPerTurn: config.maxTokensPerTurn,
 			apiTimeoutMs: config.apiTimeoutMs,
 			maxIterations: config.maxIterations,
-			maxParallelToolCalls: config.maxParallelToolCalls,
+			maxConcurrentToolExecutions: config.maxConcurrentToolExecutions,
 			hooks,
 			extensions: runtimeExtensions,
 			logger: logger ?? config.logger,

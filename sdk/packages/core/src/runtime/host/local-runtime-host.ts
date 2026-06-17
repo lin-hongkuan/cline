@@ -9,7 +9,7 @@ import {
 	captureSdkError,
 	createSessionId,
 	DEFAULT_API_TIMEOUT_MS,
-	DEFAULT_MAX_PARALLEL_TOOL_CALLS,
+	DEFAULT_MAX_CONCURRENT_TOOL_EXECUTIONS,
 	type ITelemetryService,
 	isLikelyAuthError,
 	normalizeUserInput,
@@ -475,9 +475,9 @@ export class LocalRuntimeHost implements RuntimeHost {
 				providerConfig.thinkingBudgetTokens,
 			systemPrompt: configWithProvider.systemPrompt,
 			maxIterations: configWithProvider.maxIterations,
-			maxParallelToolCalls:
-				configWithProvider.maxParallelToolCalls ??
-				DEFAULT_MAX_PARALLEL_TOOL_CALLS,
+			maxConcurrentToolExecutions:
+				configWithProvider.maxConcurrentToolExecutions ??
+				DEFAULT_MAX_CONCURRENT_TOOL_EXECUTIONS,
 			maxTokensPerTurn:
 				configWithProvider.maxTokensPerTurn ?? providerConfig.maxOutputTokens,
 			apiTimeoutMs:

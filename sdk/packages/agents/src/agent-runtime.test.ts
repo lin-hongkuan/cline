@@ -1401,7 +1401,7 @@ describe("AgentRuntime", () => {
 		expect(executionOrder).toEqual(["first", "second", "third"]);
 	});
 
-	it("limits concurrent parallel tool execution when maxParallelToolCalls is set", async () => {
+	it("limits concurrent parallel tool execution when maxConcurrentToolExecutions is set", async () => {
 		let active = 0;
 		let maxActive = 0;
 		const starts: string[] = [];
@@ -1458,7 +1458,7 @@ describe("AgentRuntime", () => {
 				createBlockingTool("three"),
 			],
 			toolExecution: "parallel",
-			maxParallelToolCalls: 2,
+			maxConcurrentToolExecutions: 2,
 		});
 
 		const runPromise = runtime.run("Limited parallel");

@@ -11,7 +11,7 @@ import {
 	type AgentRuntimeEvent,
 	type BasicLogger,
 	DEFAULT_API_TIMEOUT_MS,
-	DEFAULT_MAX_PARALLEL_TOOL_CALLS,
+	DEFAULT_MAX_CONCURRENT_TOOL_EXECUTIONS,
 } from "@cline/shared";
 import { setClineDir, setHomeDir } from "@cline/shared/storage";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -351,7 +351,7 @@ describe("LocalRuntimeHost", () => {
 				config: createConfig({
 					sessionId: sequentialSessionId,
 					apiTimeoutMs: 60_000,
-					maxParallelToolCalls: 1,
+					maxConcurrentToolExecutions: 1,
 					maxTokensPerTurn: 4096,
 					thinking: true,
 					thinkingBudgetTokens: 1024,
@@ -365,14 +365,14 @@ describe("LocalRuntimeHost", () => {
 			expect.objectContaining({
 				apiTimeoutMs: DEFAULT_API_TIMEOUT_MS,
 				hookErrorMode: "ignore",
-				maxParallelToolCalls: DEFAULT_MAX_PARALLEL_TOOL_CALLS,
+				maxConcurrentToolExecutions: DEFAULT_MAX_CONCURRENT_TOOL_EXECUTIONS,
 			}),
 		);
 		expect(createAgent).toHaveBeenNthCalledWith(
 			2,
 			expect.objectContaining({
 				apiTimeoutMs: 60_000,
-				maxParallelToolCalls: 1,
+				maxConcurrentToolExecutions: 1,
 				maxTokensPerTurn: 4096,
 				thinking: true,
 				thinkingBudgetTokens: 1024,

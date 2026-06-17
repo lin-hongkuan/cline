@@ -430,10 +430,15 @@ export interface AgentRuntimeConfig {
 	};
 	toolExecution?: "sequential" | "parallel";
 	/**
-	 * Maximum number of tool calls to execute concurrently in a single model turn.
+	 * Maximum number of emitted tool calls to execute concurrently in a single
+	 * model turn.
+	 *
+	 * This controls local runtime execution concurrency, not whether the model may
+	 * emit multiple tool calls in one response.
+	 *
 	 * Only applies when `toolExecution` is `"parallel"`.
 	 */
-	maxParallelToolCalls?: number;
+	maxConcurrentToolExecutions?: number;
 	toolPolicies?: Record<string, ToolPolicy>;
 	toolContextMetadata?: Record<string, unknown>;
 	requestToolApproval?: (

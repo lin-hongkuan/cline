@@ -5,7 +5,7 @@ import {
 	type AgentTool,
 	type BasicLogger,
 	DEFAULT_API_TIMEOUT_MS,
-	DEFAULT_MAX_PARALLEL_TOOL_CALLS,
+	DEFAULT_MAX_CONCURRENT_TOOL_EXECUTIONS,
 	type HookErrorMode,
 	type ITelemetryService,
 	type ToolApprovalRequest,
@@ -41,7 +41,7 @@ export interface DelegatedAgentRuntimeConfig
 	clinePlatform?: string;
 	clineIdeName?: string;
 	maxIterations?: number;
-	maxParallelToolCalls?: number;
+	maxConcurrentToolExecutions?: number;
 	apiTimeoutMs?: number;
 	hooks?: AgentHooks;
 	extensions?: AgentExtension[];
@@ -121,8 +121,9 @@ export function buildDelegatedAgentConfig(
 		systemPrompt,
 		tools: options.tools,
 		maxIterations: options.maxIterations ?? runtimeConfig.maxIterations,
-		maxParallelToolCalls:
-			runtimeConfig.maxParallelToolCalls ?? DEFAULT_MAX_PARALLEL_TOOL_CALLS,
+		maxConcurrentToolExecutions:
+			runtimeConfig.maxConcurrentToolExecutions ??
+			DEFAULT_MAX_CONCURRENT_TOOL_EXECUTIONS,
 		apiTimeoutMs: runtimeConfig.apiTimeoutMs ?? DEFAULT_API_TIMEOUT_MS,
 		parentAgentId: options.parentAgentId,
 		abortSignal: options.abortSignal,

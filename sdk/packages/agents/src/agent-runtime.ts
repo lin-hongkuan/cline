@@ -1070,7 +1070,7 @@ export class AgentRuntime {
 		if (this.config.toolExecution === "parallel") {
 			return this.executePreparedToolsWithLimit(
 				prepared,
-				this.config.maxParallelToolCalls,
+				this.config.maxConcurrentToolExecutions,
 			);
 		}
 
@@ -1083,12 +1083,12 @@ export class AgentRuntime {
 
 	private async executePreparedToolsWithLimit(
 		prepared: PreparedToolExecution[],
-		maxParallelToolCalls: number | undefined,
+		maxConcurrentToolExecutions: number | undefined,
 	): Promise<AgentMessage[]> {
 		const limit =
-			typeof maxParallelToolCalls === "number" &&
-			Number.isFinite(maxParallelToolCalls)
-				? Math.max(1, Math.floor(maxParallelToolCalls))
+			typeof maxConcurrentToolExecutions === "number" &&
+			Number.isFinite(maxConcurrentToolExecutions)
+				? Math.max(1, Math.floor(maxConcurrentToolExecutions))
 				: prepared.length;
 		const results = new Array<AgentMessage>(prepared.length);
 		let nextIndex = 0;

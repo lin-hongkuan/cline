@@ -165,7 +165,7 @@ export function createSessionSpawnTool(
 					maxTokensPerTurn: config.maxTokensPerTurn,
 					apiTimeoutMs: config.apiTimeoutMs,
 					maxIterations: config.maxIterations,
-					maxParallelToolCalls: config.maxParallelToolCalls,
+					maxConcurrentToolExecutions: config.maxConcurrentToolExecutions,
 					hooks: config.hooks,
 					extensions: config.extensions,
 					logger: config.logger,

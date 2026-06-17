@@ -215,10 +215,10 @@ export interface CoreSessionConfig
 	pluginPaths?: string[];
 	extensions?: AgentConfig["extensions"];
 	/**
-	 * Maximum number of tool calls to execute concurrently in a single agent
-	 * iteration. Defaults to `DEFAULT_MAX_PARALLEL_TOOL_CALLS` when omitted.
+	 * Maximum number of emitted tool calls to execute concurrently in a single
+	 * agent iteration. Defaults to one-at-a-time execution when omitted.
 	 */
-	maxParallelToolCalls?: AgentConfig["maxParallelToolCalls"];
+	maxConcurrentToolExecutions?: AgentConfig["maxConcurrentToolExecutions"];
 	execution?: AgentConfig["execution"];
 	compaction?: CoreCompactionConfig;
 	checkpoint?: CoreCheckpointConfig;
