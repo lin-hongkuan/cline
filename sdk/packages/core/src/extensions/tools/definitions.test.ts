@@ -7,6 +7,7 @@ import {
 import {
 	createBashTool,
 	createDefaultTools,
+	createEditorTool,
 	createReadFilesTool,
 	createSearchTool,
 	createSkillsTool,
@@ -967,6 +968,107 @@ describe("default run_commands tool", () => {
 				result: "ran:print('ok')",
 			}),
 		]);
+	});
+
+	it("executes exact repeated commands instead of skipping them", async () => {
+		const execute = vi.fn(
+			async (command: string | { command: string }) =>
+				`ran:${typeof command === "string" ? command : command.command}`,
+		);
+		const tool = createBashTool(execute);
+		const context = {
+			sessionId: "session-exact-repeat-executes",
+			agentId: "agent-1",
+			conversationId: "conv-1",
+			iteration: 1,
+		};
+
+		await tool.execute({ commands: ["python3 --version"] }, context);
+		const result = await tool.execute(
+			{ commands: ["python3 --version"] },
+			{ ...context, iteration: 2 },
+		);
+
+		expect(execute).toHaveBeenCalledTimes(2);
+		expect(result).toEqual([
+			{
+				query: "python3 --version",
+				result: "ran:python3 --version",
+				success: true,
+			},
+		]);
+	});
+
+	it("adds guidance after repeated similar polling commands", async () => {
+		const execute = vi.fn(
+			async (command: string | { command: string }) =>
+				`ran:${typeof command === "string" ? command : command.command}`,
+		);
+		const tool = createBashTool(execute);
+		const context = {
+			sessionId: "session-repeated-polling",
+			agentId: "agent-1",
+			conversationId: "conv-1",
+			iteration: 1,
+		};
+
+		await tool.execute({ commands: ["tail -5 /tmp/build.log"] }, context);
+		await tool.execute(
+			{ commands: ["tail -10 /tmp/build.log"] },
+			{ ...context, iteration: 2 },
+		);
+		const result = await tool.execute(
+			{ commands: ["tail -30 /tmp/build.log"] },
+			{ ...context, iteration: 3 },
+		);
+
+		expect(execute).toHaveBeenCalledTimes(3);
+		expect(result).toEqual([
+			expect.objectContaining({
+				query: "tail -30 /tmp/build.log",
+				success: true,
+			}),
+		]);
+		expect(result[0]?.result).toContain("ran:tail -30 /tmp/build.log");
+		expect(result[0]?.result).toContain("Avoid short polling loops");
+	});
+
+	it("resets polling guidance after a successful file edit", async () => {
+		const executeBash = vi.fn(
+			async (command: string | { command: string }) =>
+				`ran:${typeof command === "string" ? command : command.command}`,
+		);
+		const executeEdit = vi.fn(async () => "patched");
+		const bashTool = createBashTool(executeBash);
+		const editorTool = createEditorTool(executeEdit);
+		const context = {
+			sessionId: "session-polling-reset-after-edit",
+			agentId: "agent-1",
+			conversationId: "conv-1",
+			iteration: 1,
+		};
+
+		await bashTool.execute({ commands: ["tail -5 /tmp/build.log"] }, context);
+		await bashTool.execute(
+			{ commands: ["tail -10 /tmp/build.log"] },
+			{ ...context, iteration: 2 },
+		);
+		await editorTool.execute(
+			{
+				path: "/tmp/example.ts",
+				old_text: "before",
+				new_text: "after",
+			},
+			{ ...context, iteration: 3 },
+		);
+		const result = await bashTool.execute(
+			{ commands: ["tail -30 /tmp/build.log"] },
+			{ ...context, iteration: 4 },
+		);
+
+		expect(executeBash).toHaveBeenCalledTimes(3);
+		expect(result[0]?.result).toContain("ran:tail -30 /tmp/build.log");
+		expect(result[0]?.result).not.toContain("Avoid short polling loops");
 	});
 
 	it("truncates long command echoes in tool results without affecting execution", async () => {
